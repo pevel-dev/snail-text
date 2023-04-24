@@ -64,4 +64,4 @@ Soon...
 
 ## [Документация](README.md)
 
-## [LICENCE](LICENCE)
+## [LICENSE](LICENSE)

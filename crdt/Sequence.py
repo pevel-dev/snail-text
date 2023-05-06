@@ -116,13 +116,16 @@ class Sequence:
         seqf (SeqFunctions): SeqFunctions object to access the static methods.
     """
 
-    def __init__(self, id):
+    def __init__(self, id, initial_sequence = None):
         self.elem_list = []
         self.id_remv_list = []
         self.id_seq = []
         self.elem_seq = []
         self.id = id
         self.seqf = SeqFunctions()
+
+        if initial_sequence is not None:
+            self.append_subseq(initial_sequence)
 
     def update_seq(self):
         for item in self.elem_list:
@@ -151,7 +154,7 @@ class Sequence:
         if (index == 0 or index == -1) and len(self.id_seq) == 0:
             return 1
         elif index > len(self.id_seq) or (index < 0 and index != -1):
-            raise IndexError("Incorrect insertion index")
+            raise IndexError(f"Incorrect index: {index}")
         elif index == len(self.id_seq) or index == len(self.id_seq) - 1 or index == -1:
             import math
             return math.ceil(self.id_seq[-1]) + 1
@@ -165,9 +168,26 @@ class Sequence:
         Inserts the substring after the given index in the string.
         Returns the list tuples of (elem, id)
         """
+
+        if index == -1:
+            return self.append_subseq(subseq)
+
         insertions = []
         for i, elem in enumerate(subseq, index):
             elem_id = self.get_id_for_index(i)
+            self._add(elem, elem_id)
+            insertions.append((elem, elem_id))
+
+        return insertions
+
+    def append_subseq(self, subseq) -> list[tuple[Any, int]]:
+        import math
+        start_index = 0
+        if len(self.id_seq) > 0:
+            start_index = math.ceil(self.id_seq[-1]) + 1
+
+        insertions = []
+        for elem_id, elem in enumerate(subseq, start_index):
             self._add(elem, elem_id)
             insertions.append((elem, elem_id))
 
@@ -178,7 +198,7 @@ class Sequence:
 
     def _add(self, elem, id):
         """
-        You probably shoud use insert() or insert_tuple()
+        You probably should use insert() or insert_tuple()
         The function to add the element.
 
         Args:
@@ -209,6 +229,9 @@ class Sequence:
 
         # Call update_seq function
         self.update_seq()
+
+    def remove_at(self, index):
+        self.remove(self.id_seq[index])
 
     def query(self, id):
         """
@@ -268,5 +291,5 @@ class Sequence:
         """
         The function to get the sequence as string.
         """
-
+        self.update_seq()
         return self.seqf.get_seq(self.elem_seq)

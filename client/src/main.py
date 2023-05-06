@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import asyncio
-
 from websockets.client import connect
 
 
@@ -33,10 +32,10 @@ async def b():
     print('XUI')
 
 
-a = Client(0)
-
 if __name__ == "__main__":
+    import random
+    c = Client(random.randint(-2**31, 2**31 - 1))
     loop = asyncio.get_event_loop()
-    loop.create_task(a.run())
+    loop.create_task(c.run())
     loop.create_task(b())
     loop.run_forever()

@@ -1,3 +1,6 @@
+from typing import List, Tuple, Any
+
+
 class SeqFunctions:
     """
     A class to provide static methods to Sequence Class
@@ -6,7 +9,7 @@ class SeqFunctions:
     @staticmethod
     def add(payload, elem, id):
         """
-        The function to add an element with it's ID to Sequence object's payload.
+        The function to add an element with its ID to Sequence object's payload.
 
         Args:
             payload (list): Payload in which element has to be added.
@@ -139,8 +142,43 @@ class Sequence:
                     else:
                         self.elem_seq.append(item[0])
 
-    def add(self, elem, id):
+    def get_id_for_index(self, index=-1):
         """
+        Returns the id necessary to place the element after the given index in the represented string.
+        TODO!!!!!! Examples
+        """
+
+        if (index == 0 or index == -1) and len(self.id_seq) == 0:
+            return 1
+        elif index > len(self.id_seq) or (index < 0 and index != -1):
+            raise IndexError("Incorrect insertion index")
+        elif index == len(self.id_seq) or index == len(self.id_seq) - 1 or index == -1:
+            import math
+            return math.ceil(self.id_seq[-1]) + 1
+        else:
+            left = self.id_seq[index]
+            right = self.id_seq[index + 1]
+            return (left + right) / 2
+
+    def insert(self, subseq, index=-1) -> list[tuple[Any, int | float | Any]]:
+        """
+        Inserts the substring after the given index in the string.
+        Returns the list tuples of (elem, id)
+        """
+        insertions = []
+        for i, elem in enumerate(subseq, index):
+            elem_id = self.get_id_for_index(i)
+            self._add(elem, elem_id)
+            insertions.append((elem, elem_id))
+
+        return insertions
+
+    def insert_tuple(self, insertion_tuple: tuple[Any, int | float | Any]):
+        self._add(*insertion_tuple)
+
+    def _add(self, elem, id):
+        """
+        You probably shoud use insert() or insert_tuple()
         The function to add the element.
 
         Args:

@@ -19,3 +19,13 @@ def test_delete_many_sign_from_end(sequence):
     for i in range(1, 6):
         sequence.remove_at(len(text) - i)
     assert text == str(sequence.get_seq())
+
+
+def test_delete_insert_one_sign(sequence):
+    text = str(sequence.get_seq())
+    sign = text[5]
+
+    sequence.remove_at(5)
+    sequence.insert(sign, 4)
+
+    assert text == str(sequence.get_seq())

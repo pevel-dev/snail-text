@@ -1,4 +1,4 @@
-from typing import List, Tuple, Any
+from typing import Any
 
 
 class SeqFunctions:
@@ -116,7 +116,7 @@ class Sequence:
         seqf (SeqFunctions): SeqFunctions object to access the static methods.
     """
 
-    def __init__(self, id, initial_sequence = None):
+    def __init__(self, id, initial_sequence=None):
         self.elem_list = []
         self.id_remv_list = []
         self.id_seq = []
@@ -231,7 +231,8 @@ class Sequence:
         self.update_seq()
 
     def remove_at(self, index):
-        self.remove(self.id_seq[index])
+        removable = self.id_seq[index]
+        self.remove(removable)
 
     def query(self, id):
         """

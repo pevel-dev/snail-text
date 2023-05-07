@@ -1,0 +1,20 @@
+class Draw {
+    // Рисует спрайт 32 на 32
+    // Принимает массив со спрайтом и координаты левого верхнего угла
+    function void DrawSprite(Array sprite, int x, int y) {
+        var int currentRegister, i;
+        var int index;
+        let currentRegister = 16384 + ((x / 16) + (y*32));
+        let i = 0;
+
+        while (i < 16) {
+            let index = i * 32;
+            do Memory.poke((currentRegister + index), sprite[i]);
+            do Memory.poke((currentRegister + index + 1), sprite[i + 16]);
+            do Memory.poke((currentRegister + index + 512), sprite[i + 32]);
+            do Memory.poke((currentRegister + index + 512 + 1), sprite[i + 48]);
+            let i = i + 1;
+        }
+        return;
+    }
+}

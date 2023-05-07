@@ -1,5 +1,5 @@
 from endpoints.api import home
-from endpoints.websockets import  websocket_endpoint
+from endpoints.websockets import websocket_endpoint
 from fastapi import FastAPI
 
 

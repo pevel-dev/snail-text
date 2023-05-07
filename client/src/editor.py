@@ -1,8 +1,8 @@
 import argparse
 import random
-import curses
-from crdt.Sequence import Sequence
 import tkinter as tk
+
+from crdt.Sequence import Sequence
 
 
 class Editor:

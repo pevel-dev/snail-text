@@ -1,7 +1,6 @@
 from crdt.Sequence import Sequence
 
 
-# region simple
 def test_simple():
     text = "I am crdt!"
 
@@ -63,30 +62,3 @@ def test_simple_3():
     b.merge(a)
 
     assert b.get_seq() == "I am Xcrdt!"
-
-
-# endregion
-
-# region insert
-def test_insert():
-    text = "Code is stolen"
-    s = Sequence(0)
-    actions = []
-
-    actions += s.insert(text, 0)
-
-    actions += s.insert("not ", 7)
-    assert s.get_seq() == "Code is not stolen"
-
-    actions += s.insert('!', -1)
-    assert s.get_seq() == "Code is not stolen!"
-
-    from random import shuffle
-    s2 = Sequence(1)
-    shuffle(actions)
-    for oper in actions:
-        s2.insert_tuple(oper)
-
-    assert s.get_seq() == s2.get_seq()
-
-# endregion

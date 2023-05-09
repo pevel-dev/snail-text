@@ -1,4 +1,5 @@
 class Treedoc:
+    #TODO пусть принимает id и init_str
     def __init__(self):
         self.root = None
 

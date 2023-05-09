@@ -8,7 +8,7 @@
 # def test_delete_many_sign_from_start(sequence):
 #     text = str(sequence.get_seq())
 #     text = text[5:]
-#     for i in range(5):
+#     for i i range(5):
 #         sequence.remove_at(0)
 #     assert text == str(sequence.get_seq())
 #

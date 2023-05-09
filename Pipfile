@@ -10,7 +10,6 @@ websockets = "~=11.0.3"
 black = "~=23.1.0"
 isort = "~=5.10"
 flake8 = "~=4.0"
-bitstring = "~=4.0.2"
 
 [dev-packages]
 pytest = "~=7.3.1"

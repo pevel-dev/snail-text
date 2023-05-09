@@ -1,14 +1,9 @@
 import pytest
 
-from crdt.Sequence import Sequence
+from crdt.Treedoc import Treedoc
 
 
 @pytest.fixture
-def sequence():
-    s = Sequence(0)
-    text = "I am CRDT!"
-
-    for i in text:
-        s.append_subseq(i)
-
+def treedoc():
+    s = Treedoc(0, 0)
     return s

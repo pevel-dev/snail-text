@@ -30,12 +30,13 @@ class Client:
 
 async def b():
     await asyncio.sleep(5)
-    print('XUI')
+    print("XUI")
 
 
 if __name__ == "__main__":
     import random
-    c = Client(random.randint(-2**31, 2**31 - 1))
+
+    c = Client(random.randint(-(2**31), 2**31 - 1))
     loop = asyncio.get_event_loop()
     loop.create_task(c.run())
     loop.create_task(b())

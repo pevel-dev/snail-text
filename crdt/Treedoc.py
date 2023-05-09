@@ -26,7 +26,8 @@ class Treedoc:
 
 
 class Node:
-    def __init__(self, value, mini=False, left=None, right=None, tick, client_id):
+    def __init__(self, value, tick, client_id, mini=False, left=None,
+                 right=None):
         self.value = value
         self.left = left
         self.right = right

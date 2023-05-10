@@ -1,8 +1,9 @@
-from bisect import bisect_left, insort_left
 import math
+from bisect import bisect_left, insort_left
 from dataclasses import dataclass, field
-from sortedcontainers import SortedSet
 from decimal import Decimal
+
+from sortedcontainers import SortedSet
 
 
 @dataclass(order=True)
@@ -49,7 +50,6 @@ class HeapCRDT:
         """
 
         self.__handle_insert(chr)
-        print(str(self), chr)
 
     def __get_next_id_from_spread(self, id):
         id = math.ceil(id)
@@ -114,9 +114,9 @@ class HeapCRDT:
             right -= right % self.INDEX_DEFAULT_SPREAD
             return right - self.INDEX_DEFAULT_SPREAD
 
-        left = self.present_positions[idx - 1]
+        left = self.present_positions[idx]
 
-        right = self.present_positions[idx]
+        right = self.present_positions[idx + 1]
         return (left + right) / 2
 
     def find_pos_id_from_idx(self, idx):
@@ -134,7 +134,7 @@ class HeapCRDT:
         c = Char(value, self.new_pos_id_from_idx(index), self.author_id)
         self.set_char(c)
         return c
-    
+
     def new_chr_sub_idx(self, value: str | None, index: int) -> Char:
         """
         Returns a new Char which after processing will REPLACE the existing
@@ -144,5 +144,3 @@ class HeapCRDT:
         c = Char(value, self.find_pos_id_from_idx(index), self.author_id)
         self.set_char(c)
         return c
-        
-

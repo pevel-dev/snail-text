@@ -12,6 +12,7 @@ isort = "~=5.10"
 flake8 = "~=4.0"
 ordered-set = "*"
 sortedcontainers = "*"
+pyqt6 = "*"
 
 [dev-packages]
 pytest = "~=7.3.1"

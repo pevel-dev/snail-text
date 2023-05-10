@@ -1,5 +1,6 @@
 import argparse
 import tkinter as tk
+
 from crdt.heap import HeapCRDT
 
 
@@ -9,7 +10,7 @@ class Editor:
         if file_path is None:
             initial_string = ""
         else:
-            with open(file_path, 'r') as f:
+            with open(file_path, "r") as f:
                 initial_string = f.read()
 
         self.crdt = HeapCRDT(id, initial_string)
@@ -49,15 +50,14 @@ class TextEditor:
 
     def on_click(self, event):
         index = self.text.index(tk.CURRENT)
-        self.editor.set_cursor(int(index.split('.')[1]) - 1)
+        self.editor.set_cursor(int(index.split(".")[1]) - 1)
         self.refresh_text()
 
     def on_key(self, event):
         c: str = event.char
-        if c == '\b':
+        if c == "\b":
             self.editor.erase()
-        elif c.isalnum() or c == '\n' or c == ' ' \
-                or c == '\t':
+        elif c.isalnum() or c == "\n" or c == " " or c == "\t":
             self.editor.insert(c)
             print(self.editor.cursor_index)
         else:
@@ -69,10 +69,12 @@ class TextEditor:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(prog="Snail Text Editor",
-                                     description="Edits text at very low speeds",
-                                     epilog="Licensed under the BEERWARE license.")
-    parser.add_argument('-f', '--file', default="")
+    parser = argparse.ArgumentParser(
+        prog="Snail Text Editor",
+        description="Edits text at very low speeds",
+        epilog="Licensed under the BEERWARE license.",
+    )
+    parser.add_argument("-f", "--file", default="")
     args = parser.parse_args()
 
     file = args.file if args.file != "" else None

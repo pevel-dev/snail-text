@@ -60,13 +60,13 @@ class Treedoc:
 
 class Node:
     def __init__(
-            self,
-            value,
-            tick,
-            client_id,
-            deleted=False,
-            left=None,
-            right=None,
+        self,
+        value,
+        tick,
+        client_id,
+        deleted=False,
+        left=None,
+        right=None,
     ):
         self.value = value
         self.left = left

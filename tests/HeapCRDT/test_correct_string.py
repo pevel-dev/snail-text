@@ -1,5 +1,6 @@
 import pytest
-from crdt.heap import HeapCRDT, Char
+
+from crdt.heap import Char, HeapCRDT
 
 test_str = "The quick brown fox jumps over the lazy dog."
 
@@ -11,6 +12,7 @@ def test_init():
 
 def test_nonempty():
     from random import shuffle
+
     crdt = HeapCRDT(1)
     chars = []
     idx = 0

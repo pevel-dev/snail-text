@@ -17,7 +17,7 @@ class Editor:
         self.cursor_index = 0
 
     def insert(self, char):
-        self.crdt.new_chr_at_idx(char, self.cursor_index)
+        self.crdt.new_chr_at_idx(char, self.cursor_index + 2)
         self.cursor_index += 1
 
     def erase(self):

@@ -1,9 +1,8 @@
-import math
 from bisect import bisect_left, insort_left
+import math
 from dataclasses import dataclass, field
-from decimal import Decimal
-
 from sortedcontainers import SortedSet
+from decimal import Decimal
 
 
 @dataclass(order=True)
@@ -19,8 +18,6 @@ class Char:
 
 
 class HeapCRDT:
-    INDEX_DEFAULT_SPREAD = Decimal(65536)
-
     def __init__(self, author_id: int, init_str: str = ""):
         """
         Creates a new heap CRDT.
@@ -50,6 +47,7 @@ class HeapCRDT:
         """
 
         self.__handle_insert(chr)
+        print(str(self), chr)
 
     def __get_next_id_from_spread(self, id):
         id = math.ceil(id)
@@ -93,7 +91,7 @@ class HeapCRDT:
 
     def reset_from(self, init_str: str):
         """Rebuilds the inner data structure from the given string"""
-        curr_idx = self.INDEX_DEFAULT_SPREAD
+        curr_idx = Decimal(1)
         self.heap = list()
         self.positions = set()
 
@@ -101,22 +99,18 @@ class HeapCRDT:
             self.heap.append(Char(c, curr_idx, -1))
             self.positions.add(curr_idx)
             self.present_positions.add(curr_idx)
-            curr_idx += self.INDEX_DEFAULT_SPREAD
+            curr_idx += 1
 
     def new_pos_id_from_idx(self, idx):
         if len(self.heap) == 0:
-            return 0
-        if idx >= len(self.present_positions) - 1:
-            return self.__get_next_id_from_spread(self.heap[-1].pos_id)
+            return Decimal(1)
+        elif idx <= 0:
+            return math.floor(self.heap[0].pos_id) - 2
+        elif idx >= len(self.present_positions):
+            return math.ceil(self.heap[-1].pos_id) + 2
 
-        if idx <= 0:
-            right = math.floor(self.heap[0].pos_id)
-            right -= right % self.INDEX_DEFAULT_SPREAD
-            return right - self.INDEX_DEFAULT_SPREAD
-
-        left = self.present_positions[idx]
-
-        right = self.present_positions[idx + 1]
+        left = self.present_positions[idx - 1]
+        right = self.present_positions[idx]
         return (left + right) / 2
 
     def find_pos_id_from_idx(self, idx):
@@ -134,7 +128,7 @@ class HeapCRDT:
         c = Char(value, self.new_pos_id_from_idx(index), self.author_id)
         self.set_char(c)
         return c
-
+    
     def new_chr_sub_idx(self, value: str | None, index: int) -> Char:
         """
         Returns a new Char which after processing will REPLACE the existing
@@ -144,3 +138,5 @@ class HeapCRDT:
         c = Char(value, self.find_pos_id_from_idx(index), self.author_id)
         self.set_char(c)
         return c
+        
+

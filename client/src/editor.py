@@ -1,7 +1,7 @@
 import argparse
-import random
 import tkinter as tk
-from crdt.Treedoc import Treedoc
+from crdt.heap import HeapCRDT
+
 
 class Editor:
     def __init__(self, id, file_path=None):
@@ -11,22 +11,30 @@ class Editor:
         else:
             with open(file_path, 'r') as f:
                 initial_string = f.read()
-        self.treedoc = Treedoc()
+
+        self.crdt = HeapCRDT(id, initial_string)
         self.cursor_index = 0
 
     def insert(self, char):
-        self.treedoc.insert_at(self.cursor_index, char)
+        self.crdt.new_chr_at_idx(char, self.cursor_index)
         self.cursor_index += 1
 
     def erase(self):
-        if self.cursor_index <= 0:
+        if self.cursor_index <= -1:
             return
 
-        self.treedoc.delete_at(self.cursor_index - 1)
+        self.crdt.new_chr_sub_idx(None, self.cursor_index)
         self.cursor_index -= 1
 
     def set_cursor(self, index):
         self.cursor_index = index
+        print(index)
+
+    def clear_oper_queue(self):
+        pass
+
+    def get_oper_queue(self):
+        pass
 
 
 class TextEditor:
@@ -35,7 +43,7 @@ class TextEditor:
         self.editor = editor
         self.text = tk.Text(master)
         self.text.pack()
-        self.text.insert(tk.END, self.editor.treedoc.get_seq())
+        self.text.insert(tk.END, str(self.editor.crdt))
         self.text.bind("<Button-1>", self.on_click)
         self.text.bind("<Key>", self.on_key)
 
@@ -45,16 +53,19 @@ class TextEditor:
         self.refresh_text()
 
     def on_key(self, event):
-        if event.char == '\b':
+        c: str = event.char
+        if c == '\b':
             self.editor.erase()
-        elif event.char.isprintable():
-            self.editor.insert(event.char)
-
-        self.refresh_text()
+        elif c.isalnum() or c == '\n' or c == ' ' \
+                or c == '\t':
+            self.editor.insert(c)
+            print(self.editor.cursor_index)
+        else:
+            self.refresh_text()
 
     def refresh_text(self):
         self.text.delete(0.0, tk.END)
-        self.text.insert(tk.END, self.editor.treedoc.get_seq())
+        self.text.insert(tk.END, str(self.editor.crdt))
 
 
 if __name__ == "__main__":

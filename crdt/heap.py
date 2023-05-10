@@ -2,12 +2,13 @@ from bisect import bisect_left, insort_left
 import math
 from dataclasses import dataclass, field
 from sortedcontainers import SortedSet
+from decimal import Decimal
 
 
 @dataclass(order=True)
 class Char:
     value: str | None = field(compare=False)
-    pos_id: float = field(compare=True)
+    pos_id: Decimal = field(compare=True)
     author_id: int = field(compare=False)
 
     def __iter__(self):
@@ -17,7 +18,7 @@ class Char:
 
 
 class HeapCRDT:
-    INDEX_DEFAULT_SPREAD = 32768.0
+    INDEX_DEFAULT_SPREAD = Decimal(65536)
 
     def __init__(self, author_id: int, init_str: str = ""):
         """
@@ -29,9 +30,6 @@ class HeapCRDT:
         Char from the user with lower id is going to overwrite the others.
         Value -1 is used for UNKNOWN.
         """
-
-        if not isinstance(self.INDEX_DEFAULT_SPREAD, float):
-            raise TypeError("Index spread must be a float")
 
         self.author_id = author_id
 
@@ -51,6 +49,7 @@ class HeapCRDT:
         """
 
         self.__handle_insert(chr)
+        print(str(self), chr)
 
     def __get_next_id_from_spread(self, id):
         id = math.ceil(id)
@@ -78,7 +77,7 @@ class HeapCRDT:
 
     def __repr__(self):
         """Construct a string from every non-removed element"""
-        prev_id = -1
+        prev_id = self.heap[0].pos_id if len(self.heap) > 0 else -1
         result = []
 
         for c, pos_id, _ in self.heap:
@@ -104,22 +103,20 @@ class HeapCRDT:
             self.present_positions.add(curr_idx)
             curr_idx += self.INDEX_DEFAULT_SPREAD
 
-    def new_pos_id_from_idx(self, idx):
+    def new_pos_id_from_idx(self, idx):  # TODO индекс 0 и всё кроме конца не работает
         if len(self.heap) == 0:
-            return self.INDEX_DEFAULT_SPREAD
-        if idx > len(self.present_positions):
+            return 0
+        if idx >= len(self.present_positions) - 1:
             return self.__get_next_id_from_spread(self.heap[-1].pos_id)
 
-        if idx == 0:
+        if idx == -1:  # TKINTER ***
             right = math.floor(self.heap[0].pos_id)
             right -= right % self.INDEX_DEFAULT_SPREAD
             return right - self.INDEX_DEFAULT_SPREAD
 
-        left = self.present_positions[idx - 1]
-        if idx == len(self.present_positions):
-            return self.__get_next_id_from_spread(left)
+        left = self.present_positions[idx]
 
-        right = self.present_positions[idx]
+        right = self.present_positions[idx + 1]
         return (left + right) / 2
 
     def find_pos_id_from_idx(self, idx):

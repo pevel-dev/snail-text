@@ -103,20 +103,20 @@ class HeapCRDT:
             self.present_positions.add(curr_idx)
             curr_idx += self.INDEX_DEFAULT_SPREAD
 
-    def new_pos_id_from_idx(self, idx):  # TODO индекс 0 и всё кроме конца не работает
+    def new_pos_id_from_idx(self, idx):
         if len(self.heap) == 0:
             return 0
         if idx >= len(self.present_positions) - 1:
             return self.__get_next_id_from_spread(self.heap[-1].pos_id)
 
-        if idx == -1:  # TKINTER ***
+        if idx <= 0:
             right = math.floor(self.heap[0].pos_id)
             right -= right % self.INDEX_DEFAULT_SPREAD
             return right - self.INDEX_DEFAULT_SPREAD
 
-        left = self.present_positions[idx]
+        left = self.present_positions[idx - 1]
 
-        right = self.present_positions[idx + 1]
+        right = self.present_positions[idx]
         return (left + right) / 2
 
     def find_pos_id_from_idx(self, idx):

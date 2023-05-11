@@ -28,7 +28,7 @@ class EditorBackend:
                     self.crdt.new_chr_sub_idx(None, i1)
                 # print(f'Удалить {s1[i1:i2]} из позиции [{i1}:{i2}]')
             elif tag == "insert":
-                for i in range(j1, j2):
-                    self.crdt.new_chr_at_idx(s1[i], i1)
+                for j in range(j1, j2):
+                    self.crdt.new_chr_at_idx(s1[j], j)
                 print(i1, end=" ")
         print(str(self.crdt))

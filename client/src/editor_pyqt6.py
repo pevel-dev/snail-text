@@ -1,11 +1,10 @@
 import argparse
 import sys
 
-from PyQt6.QtGui import QKeySequence
-
-from editor_backend import EditorBackend
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTextEdit, QFileDialog, \
     QMessageBox, QMenuBar
+
+from editor_backend import EditorBackend
 
 
 class MainWindow(QMainWindow):

@@ -18,7 +18,7 @@ class MainWindow(QMainWindow):
         self.text = str(self.backend.crdt)
         super().__init__()
 
-        self.setWindowTitle("My App")
+        self.setWindowTitle("snail-text")
         self.text_widget = QTextEdit()
         self.text_widget.setPlainText(self.text)
 

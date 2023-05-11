@@ -1,7 +1,7 @@
+from decimal import Decimal
 from random import shuffle
 
 from crdt.heap import HeapCRDT
-from decimal import Decimal
 
 test_p1 = "Якутия - "
 test_p2 = "крупнейший "

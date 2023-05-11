@@ -1,10 +1,15 @@
 import argparse
 import sys
 
-from PyQt6.QtWidgets import QApplication, QMainWindow, QTextEdit, QFileDialog, \
-    QMessageBox, QMenuBar
-
 from editor_backend import EditorBackend
+from PyQt6.QtWidgets import (
+    QApplication,
+    QFileDialog,
+    QMainWindow,
+    QMenuBar,
+    QMessageBox,
+    QTextEdit,
+)
 
 
 class MainWindow(QMainWindow):
@@ -40,16 +45,18 @@ class MainWindow(QMainWindow):
         self.setMenuBar(menu_bar)
 
     def open_file(self):
-        file_path, _ = QFileDialog.getOpenFileName \
-            (self, "Open File", "", "Text Files (*.txt);;All Files (*)")
+        file_path, _ = QFileDialog.getOpenFileName(
+            self, "Open File", "", "Text Files (*.txt);;All Files (*)"
+        )
         self.backend = EditorBackend(file_path)
         self.text = str(self.backend.crdt)
         self.text_widget.setPlainText(self.text)
 
     def save_file(self):
         if self.backend.file is None:
-            file_path, _ = QFileDialog.getSaveFileName\
-                (self, "Save File", "","Text Files (*.txt);;All Files (*)")
+            file_path, _ = QFileDialog.getSaveFileName(
+                self, "Save File", "", "Text Files (*.txt);;All Files (*)"
+            )
             if file_path:
                 self.backend.file = file_path
 

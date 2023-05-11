@@ -1,8 +1,9 @@
-from bisect import bisect_left, insort_left
 import math
+from bisect import bisect_left, insort_left
 from dataclasses import dataclass, field
-from sortedcontainers import SortedSet
 from decimal import Decimal
+
+from sortedcontainers import SortedSet
 
 
 @dataclass(order=True)
@@ -128,7 +129,7 @@ class HeapCRDT:
         c = Char(value, self.new_pos_id_from_idx(index), self.author_id)
         self.set_char(c)
         return c
-    
+
     def new_chr_sub_idx(self, value: str | None, index: int) -> Char:
         """
         Returns a new Char which after processing will REPLACE the existing
@@ -138,5 +139,3 @@ class HeapCRDT:
         c = Char(value, self.find_pos_id_from_idx(index), self.author_id)
         self.set_char(c)
         return c
-        
-

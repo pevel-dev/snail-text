@@ -1,4 +1,3 @@
-from decimal import Decimal
 from random import shuffle
 
 from crdt.heap import HeapCRDT
@@ -39,9 +38,8 @@ def test_insert_middle():
     for o in oper:
         crdt2.set_char(o)
 
-
-#    assert str(crdt) == test_p1 + test_p2 + test_p3 + test_p4
-#    assert str(crdt2) == test_p1 + test_p2 + test_p3 + test_p4
+    assert str(crdt) == test_p1 + test_p2 + test_p3 + test_p4
+    assert str(crdt2) == test_p1 + test_p2 + test_p3 + test_p4
 
 
 def test_remove():
@@ -62,3 +60,7 @@ def test_remove():
 
     assert str(crdt) == test_p1 + test_p2 + test_p3 + test_p5
     assert str(crdt2) == test_p1 + test_p2 + test_p3 + test_p5
+
+
+def test_from_files():
+    pass

@@ -13,6 +13,7 @@ flake8 = "~=4.0"
 ordered-set = "*"
 sortedcontainers = "*"
 pyqt6 = "*"
+coverage = "*"
 
 [dev-packages]
 pytest = "~=7.3.1"

@@ -16,7 +16,7 @@ class EditorBackend:
                 print(init_str)
 
         self.file = file_path
-        self.crdt = HeapCRDT(random.randint(10, 1000000), init_str)  # TODO: нормально получать id
+        self.crdt = HeapCRDT(random.randint(10, 1000000), init_str)  # TODO: нормально получать id и пофиксить вставку
 
     def handle_change_text(self, current_text, last_text):
         s1 = current_text

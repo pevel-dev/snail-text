@@ -105,9 +105,9 @@ class HeapCRDT:
         if len(self.heap) == 0:
             return Decimal(1)
         elif idx <= 0:
-            return math.floor(self.heap[0].pos_id) - 2
+            return Decimal(math.floor(self.heap[0].pos_id) - 2)
         elif idx >= len(self.present_positions):
-            return math.ceil(self.heap[-1].pos_id) + 2
+            return Decimal(math.ceil(self.heap[-1].pos_id) + 2)
 
         left = self.present_positions[idx - 1]
         right = self.present_positions[idx]

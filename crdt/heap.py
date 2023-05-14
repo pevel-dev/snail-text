@@ -48,6 +48,7 @@ class HeapCRDT:
         """
 
         self.__handle_insert(chr)
+        # print(str(self), chr)
 
     def __get_next_id_from_spread(self, id):
         id = math.ceil(id)

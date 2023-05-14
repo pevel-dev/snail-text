@@ -13,8 +13,8 @@ from PyQt6.QtWidgets import (
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, init_file_path=None):
-        self.backend = EditorBackend(init_file_path)
+    def __init__(self, init_file_path=None, editor_backend_debug=False):
+        self.backend = EditorBackend(init_file_path, editor_backend_debug)
         self.text = str(self.backend.crdt)
         super().__init__()
 
@@ -74,13 +74,16 @@ def main():
         epilog="Licensed under the BEERWARE license.",
     )
     parser.add_argument("-f", "--file", default="")
+    parser.add_argument("--debug", default=False, type=bool, )
     args = parser.parse_args()
 
     file = args.file if args.file != "" else None
 
     app = QApplication(sys.argv)
 
-    window = MainWindow(file)
+    window = MainWindow(file, args.debug)
+    if args.debug:
+        print(" --- EDITOR IN DEBUG MODE --- ")
     window.show()
 
     app.exec()

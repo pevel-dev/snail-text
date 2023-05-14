@@ -3,7 +3,7 @@ import pytest
 from crdt.heap import HeapCRDT
 
 
-@pytest.mark.parametrize("file", ("unit/scenarios/1", "unit/scenarios/log"))
+@pytest.mark.parametrize("file", ("../unit/scenarios/1", "../unit/scenarios/log"))
 def test_from_files(file):
     crdt = []
     with open(file, "r", encoding="utf-8") as file:

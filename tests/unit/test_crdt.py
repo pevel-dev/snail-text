@@ -98,7 +98,7 @@ def test_empty():
 
 
 @pytest.mark.parametrize(
-    "file", ("sample_files/simple.txt", "sample_files/40KB.txt")
+    "file", ("../sample_files/simple.txt", "../sample_files/40KB.txt")
 )
 def test_insert_from_files(crdt, file):
     lines = []
@@ -107,8 +107,8 @@ def test_insert_from_files(crdt, file):
 
     c = 0
     for line in lines:
-        for sign in line:
-            crdt.new_chr_at_idx(sign, c)
+        for char in line:
+            crdt.new_chr_at_idx(char, c)
             c += 1
 
     assert str(crdt) == "".join(lines)

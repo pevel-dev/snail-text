@@ -7,7 +7,7 @@ from crdt.heap import HeapCRDT
 
 
 class EditorBackend:
-    def __init__(self, file_path=None):
+    def __init__(self, file_path=None, debug_mode=False):
         self.differ = difflib.SequenceMatcher()
         init_str = ""
         if file_path is not None:
@@ -19,6 +19,7 @@ class EditorBackend:
         self.crdt = HeapCRDT(
             random.randint(10, 1000000), init_str
         )  # TODO: нормально получать id и пофиксить вставку
+        self.debug_mode = debug_mode
 
     def handle_change_text(self, current_text, last_text):
         s1 = current_text
@@ -32,5 +33,11 @@ class EditorBackend:
             elif tag == "insert":
                 for j in range(j1, j2):
                     self.crdt.new_chr_at_idx(s1[j], j)
-                print(i1, end=" ")
-        print(str(self.crdt))
+        if self.debug_mode:
+            self.__debug_text_matches(current_text)
+
+    def __debug_text_matches(self, current_text: str):
+        if str(self.crdt) != current_text:
+            print("CRDT and GUI text mismatch:")
+            print(f"CRDT: {str(self.crdt)}")
+            print(f"GUI: {current_text}")

@@ -112,7 +112,12 @@ class HeapCRDT:
 
         left = self.present_positions[idx - 1]
         right = self.present_positions[idx]
-        return (left + right) / 2
+
+        c = (left + right) / 2
+        while c in self.positions:  # TODO очень неэффективно
+            c = (c + right) / 2
+
+        return c
 
     def find_pos_id_from_idx(self, idx):
         if idx >= len(self.present_positions) or idx < 0:

@@ -1,7 +1,6 @@
 import argparse
 import sys
 
-from editor_backend import EditorBackend
 from PyQt6.QtWidgets import (
     QApplication,
     QFileDialog,
@@ -10,6 +9,8 @@ from PyQt6.QtWidgets import (
     QMessageBox,
     QTextEdit, QWidget,
 )
+
+from editor_backend import EditorBackend
 
 
 class MainWindow(QMainWindow):
@@ -28,8 +29,8 @@ class MainWindow(QMainWindow):
 
     def text_change(self):
         current_text = self.text_widget.toPlainText()
-        self.backend.handle_change_text(current_text, self.text)
-        self.text = current_text
+        self.text = self.backend.handle_change_text(current_text, self.text)
+        self.text_widget.setba
 
     def setup_menus(self):
         menu_bar = QMenuBar(parent=self)

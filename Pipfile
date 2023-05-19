@@ -14,6 +14,7 @@ ordered-set = "*"
 sortedcontainers = "*"
 pyqt6 = "*"
 coverage = "*"
+dataclasses-json = "*"
 
 [dev-packages]
 pytest = "~=7.3.1"

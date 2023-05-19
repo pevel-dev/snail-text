@@ -3,9 +3,11 @@ from bisect import bisect_left, insort_left
 from dataclasses import dataclass, field
 from decimal import Decimal
 
+from dataclasses_json import dataclass_json
 from sortedcontainers import SortedSet
 
 
+@dataclass_json
 @dataclass(order=True)
 class Char:
     value: str | None = field(compare=False)

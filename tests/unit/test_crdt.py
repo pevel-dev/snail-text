@@ -120,3 +120,13 @@ def test_insert_new_line():
     crdt.new_chr_at_idx("\n", 10)
     crdt.new_chr_at_idx("\n", 22)
     assert str(crdt) == "\n" + test_p1 + "\n" + test_p2 + "\n"
+
+
+def test_character_before_last():
+    init = "time.sleep(100)"
+    crdt = HeapCRDT(0)
+    for i, c in enumerate(init):
+        crdt.new_chr_at_idx(c, i)
+    crdt.new_chr_sub_idx(None, len(str(crdt)) - 2)
+    crdt.new_chr_at_idx('1', len(str(crdt)) - 1)
+    assert str(crdt) == "time.sleep(101)"

@@ -7,7 +7,7 @@ from PyQt6.QtWidgets import (
     QMainWindow,
     QMenuBar,
     QMessageBox,
-    QTextEdit,
+    QTextEdit, QWidget,
 )
 
 from editor_backend import EditorBackend
@@ -67,6 +67,24 @@ class MainWindow(QMainWindow):
         except Exception as e:
             QMessageBox.critical(self, "Error", str(e))
 
+    def refresh_text(self):
+        if not self.backend.has_changes:
+            return
+
+        self.text = str(self.backend.crdt)
+        self.text_widget.setPlainText(self.text)
+        self.backend.has_changes = False
+
+
+def get_window(file: str = None, debug_mode: bool = False) -> MainWindow:
+    app = QApplication(sys.argv)
+    window = MainWindow(file, debug_mode)
+    if debug_mode:
+        print(" --- EDITOR IN DEBUG MODE --- ")
+    window.show()
+    app.exec()
+    return window
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -75,19 +93,12 @@ def main():
         epilog="Licensed under the BEERWARE license.",
     )
     parser.add_argument("-f", "--file", default="")
-    parser.add_argument("--debug", default=False, type=bool, )
+    parser.add_argument("--debug", default=False, type=bool)
     args = parser.parse_args()
 
     file = args.file if args.file != "" else None
 
-    app = QApplication(sys.argv)
-
-    window = MainWindow(file, args.debug)
-    if args.debug:
-        print(" --- EDITOR IN DEBUG MODE --- ")
-    window.show()
-
-    app.exec()
+    window_main = get_window(file, args.debug)
 
 
 if __name__ == "__main__":

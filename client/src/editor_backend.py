@@ -1,10 +1,12 @@
+import asyncio
 import difflib
+import json
 import random
 from collections import deque
 
-from PyQt6.QtWidgets import QFileDialog
+import websockets
 
-from crdt.heap import HeapCRDT, Char
+from crdt.heap import Char, HeapCRDT
 
 
 class EditorBackend:
@@ -17,9 +19,11 @@ class EditorBackend:
                 print(init_str)
 
         self.file = file_path
-        self.crdt = HeapCRDT(
-            random.randint(10, 1000000), init_str
-        )  # TODO: нормально получать id и пофиксить вставку
+
+        self.client_id = random.randint(10, 1000000)
+
+        self.crdt = HeapCRDT(self.client_id,
+                             init_str)  # TODO: нормально получать id и пофиксить вставку
 
         if debug_mode:
             self.handle_change_text = self.__debug_handle_change_text
@@ -28,6 +32,9 @@ class EditorBackend:
 
         self.oper_queue = deque()
         self.has_changes = False
+        self.loop = asyncio.get_event_loop()
+
+        self.socket = None
 
     def __handle_change_text(self, current_text, last_text):
         s1 = current_text
@@ -43,18 +50,22 @@ class EditorBackend:
                     c = self.crdt.new_chr_at_idx(s1[j], j)
                     self.oper_queue.append(c)
 
-    def __debug_handle_change_text(self, current_text, last_text):
+    async def __debug_handle_change_text(self, current_text, last_text):
         s1 = current_text
         self.differ.set_seqs(last_text, current_text)
         for tag, i1, i2, j1, j2 in reversed(self.differ.get_opcodes()):
             if tag == "delete":
                 for i in range(i1, i2):
                     c = self.crdt.new_chr_sub_idx(None, i1)
+                    task = self.loop.create_task(self.send_update(c))
+                    await task
                     self.__debug_print_oper(c, i1)
                     self.oper_queue.append(c)
             elif tag == "insert":
                 for j in range(j1, j2):
                     c = self.crdt.new_chr_at_idx(s1[j], j)
+                    task = self.loop.create_task(self.send_update(c))
+                    await task
                     self.__debug_print_oper(c, j)
                     self.oper_queue.append(c)
 
@@ -86,4 +97,16 @@ class EditorBackend:
             c = oper_queue.pop()
             self.crdt.set_char(c)
 
+    async def connect(self):
+        async with websockets.connect("ws://127.0.0.1:8000/ws") as websocket:
+            self.socket = websocket  # TODO: КОЛИЧЕСТВО ВОЗМОЖНЫХ ПРИКОЛОВ ЗАШКАЛИВАЕТ
+            while True:
+                update = await websocket.recv()
+                update = json.dumps(update)
+                self.crdt.set_char(Char.from_json(update["char"]))
+                self.has_changes = True
 
+
+    async def send_update(self, c):
+        await self.socket.send_json(
+            {"update": c.to_json(), "client_id": self.client_id, "file_id": 0})

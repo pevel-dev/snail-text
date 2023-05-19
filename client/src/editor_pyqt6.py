@@ -1,21 +1,22 @@
 import argparse
+import asyncio
 import sys
-
+import threading
+from editor_backend import EditorBackend
 from PyQt6.QtWidgets import (
     QApplication,
     QFileDialog,
     QMainWindow,
     QMenuBar,
     QMessageBox,
-    QTextEdit, QWidget,
+    QTextEdit,
+    QWidget,
 )
-
-from editor_backend import EditorBackend
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, init_file_path=None, editor_backend_debug=False):
-        self.backend = EditorBackend(init_file_path, editor_backend_debug)
+    def __init__(self, backend, init_file_path=None, editor_backend_debug=False):
+        self.backend = backend
         self.text = str(self.backend.crdt)
         super().__init__()
 
@@ -76,9 +77,12 @@ class MainWindow(QMainWindow):
         self.backend.has_changes = False
 
 
-def get_window(file: str = None, debug_mode: bool = False) -> MainWindow:
+async def get_window(file: str = None, debug_mode: bool = False) -> MainWindow:
+    backend = EditorBackend(file, debug_mode)
     app = QApplication(sys.argv)
-    window = MainWindow(file, debug_mode)
+    window = MainWindow(backend, file, debug_mode)
+    # task = self.loop.create_task(self.connect())
+    # await task
     if debug_mode:
         print(" --- EDITOR IN DEBUG MODE --- ")
     window.show()
@@ -86,7 +90,7 @@ def get_window(file: str = None, debug_mode: bool = False) -> MainWindow:
     return window
 
 
-def main():
+async def main():
     parser = argparse.ArgumentParser(
         prog="Snail Text Editor",
         description="Edits text at very low speeds",
@@ -98,8 +102,8 @@ def main():
 
     file = args.file if args.file != "" else None
 
-    window_main = get_window(file, args.debug)
+    window_main = await get_window(file, args.debug)
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

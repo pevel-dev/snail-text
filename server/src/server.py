@@ -1,9 +1,9 @@
 from collections import defaultdict
 
 from fastapi import WebSocket
+from server.src.file import File
 
 from crdt.heap import Char
-from file import File
 
 
 class Server:
@@ -23,7 +23,7 @@ class Server:
         self.count_clients -= 1
         del self.clients[client_id]
 
-    def handle_update(self, update: dict, client_id: int,
+    async def handle_update(self, update: dict, client_id: int,
                       file_id: int) -> None:
         self.clients[client_id]["file"].crdt.set_char(
             Char.from_json(update["char"]))

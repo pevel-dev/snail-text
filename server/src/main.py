@@ -1,6 +1,6 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
-from server import Server
+from server.src.server import Server
 
 app = FastAPI()
 server = Server()

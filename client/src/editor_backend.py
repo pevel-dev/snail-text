@@ -2,6 +2,7 @@ import difflib
 import random
 from collections import deque
 
+from client.src.editor_pyqt6 import MainWindow
 from crdt.heap import HeapCRDT, Char
 
 
@@ -25,7 +26,8 @@ class EditorBackend:
             self.handle_change_text = self.__handle_change_text
 
         self.oper_queue = deque()
-        self.has_changes = False
+
+        self.frontend = MainWindow(self)
 
     async def __handle_change_text(self, current_text, last_text):
         s1 = current_text
@@ -77,9 +79,11 @@ class EditorBackend:
         print(char.value, index, char.pos_id)
 
     async def apply_queue(self, oper_queue: deque):
-        if oper_queue:
-            self.has_changes = True
+        has_changes = len(oper_queue) > 0
 
         while oper_queue:
             c = oper_queue.pop()
             self.crdt.set_char(c)
+
+        if has_changes:
+            self.frontend.refresh_text()

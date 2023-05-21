@@ -4,14 +4,13 @@ import json
 import sys
 from collections import deque
 from random import randint
-
+from decimal import Decimal
 import websockets
 from PyQt6 import QtCore, QtWidgets
 from PyQt6.QtWidgets import QMainWindow, QTextEdit, QMenuBar, QFileDialog, \
     QMessageBox
 from qasync import QEventLoop, asyncSlot
-from crdt.heap import HeapCRDT, Char
-
+from heap import HeapCRDT, Char
 
 class EditorBackend(QtCore.QObject):
     dataChanged = QtCore.pyqtSignal(dict)
@@ -28,8 +27,14 @@ class EditorBackend(QtCore.QObject):
                 print(init_str)
 
         self.file = file_path
+        if self.file is None:
+            self.name_file = "test"
+        else:
+            self.name_file = self.file.split()[-1]
+
+        self.client_id = randint(10, 1000000)
         self.crdt = HeapCRDT(
-            randint(10, 1000000), init_str
+            self.client_id, init_str
         )
 
         if debug_mode:
@@ -46,14 +51,20 @@ class EditorBackend(QtCore.QObject):
 
     async def connect(self, server):
         self._websocket = await websockets.connect(server)
+        await self.send_hello_data(self._websocket)
         await self.on_message()
+
+    async def send_hello_data(self, websocket):
+        await websocket.send(json.dumps({"client_id": self.client_id, "file_id": self.name_file}))
+
 
     @asyncSlot(dict)
     async def on_message(self):
         while True:
             message = await self.websocket.recv()
             try:
-                message = Char.from_json(message)
+                message = json.loads(message)
+                message = Char.from_dict(message["char"])
             except:
                 print(f"Ты идиот чё прислал {message}")
                 continue
@@ -61,11 +72,9 @@ class EditorBackend(QtCore.QObject):
             self.has_changes = True
 
     @asyncSlot(dict)
-    async def send_message(self, message):
-        while self.websocket is None:
-            await asyncio.sleep(1)
-        data = json.dumps(message)
-        await self.websocket.send(data)
+    async def send_update(self, char: Char):
+        data = {"client_id": self.client_id, "file_id": self.name_file, "char": char.to_dict()}
+        await self.websocket.send(json.dumps(data, ensure_ascii=False, default=str))
 
     def run(self):
         loop = asyncio.get_event_loop()
@@ -80,11 +89,11 @@ class EditorBackend(QtCore.QObject):
             if tag == "delete":
                 for i in range(i1, i2):
                     c = self.crdt.new_chr_sub_idx(None, i1)
-                    self.oper_queue.append(c)
+                    self.send_update(c)
             elif tag == "insert":
                 for j in range(j1, j2):
                     c = self.crdt.new_chr_at_idx(s1[j], j)
-                    self.oper_queue.append(c)
+                    self.send_update(c)
 
     def __debug_handle_change_text(self, current_text, last_text):
         s1 = current_text
@@ -94,12 +103,12 @@ class EditorBackend(QtCore.QObject):
                 for i in range(i1, i2):
                     c = self.crdt.new_chr_sub_idx(None, i1)
                     self.__debug_print_oper(c, i1)
-                    self.oper_queue.append(c)
+                    self.send_update(c)
             elif tag == "insert":
                 for j in range(j1, j2):
                     c = self.crdt.new_chr_at_idx(s1[j], j)
                     self.__debug_print_oper(c, j)
-                    self.oper_queue.append(c)
+                    self.send_update(c)
 
         self.__debug_text_matches(current_text)
 
@@ -181,17 +190,13 @@ class Frontend(QMainWindow):
             QMessageBox.critical(self, "Error", str(e))
 
     async def update_text(self):
-        return
-
-        # while True:
-        #     if not self.backend.has_changes:
-        #         return
-        #
-        #     self.text = str(self.backend.crdt)
-        #     self.text_widget.setPlainText(self.text)
-        #     self.backend.has_changes = False
-        #
-        #     await asyncio.sleep(0.01)
+        while True:
+            if not self.backend.has_changes:
+                await asyncio.sleep(0.01)
+                continue
+            self.text = str(self.backend.crdt)
+            self.text_widget.setPlainText(self.text)
+            self.backend.has_changes = False
 
 
 if __name__ == "__main__":

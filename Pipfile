@@ -16,7 +16,7 @@ pyqt6 = "*"
 coverage = "*"
 dataclasses-json = "*"
 qasync = "*"
-pyqtgraph = "*"
+loguru = "*"
 
 [dev-packages]
 pytest = "~=7.3.1"

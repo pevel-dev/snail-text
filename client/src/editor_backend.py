@@ -2,8 +2,6 @@ import difflib
 import random
 from collections import deque
 
-from PyQt6.QtWidgets import QFileDialog
-
 from crdt.heap import HeapCRDT, Char
 
 
@@ -29,7 +27,7 @@ class EditorBackend:
         self.oper_queue = deque()
         self.has_changes = False
 
-    def __handle_change_text(self, current_text, last_text):
+    async def __handle_change_text(self, current_text, last_text):
         s1 = current_text
         #  s2 = last_text
         self.differ.set_seqs(last_text, current_text)
@@ -43,24 +41,24 @@ class EditorBackend:
                     c = self.crdt.new_chr_at_idx(s1[j], j)
                     self.oper_queue.append(c)
 
-    def __debug_handle_change_text(self, current_text, last_text):
+    async def __debug_handle_change_text(self, current_text, last_text):
         s1 = current_text
         self.differ.set_seqs(last_text, current_text)
         for tag, i1, i2, j1, j2 in reversed(self.differ.get_opcodes()):
             if tag == "delete":
                 for i in range(i1, i2):
                     c = self.crdt.new_chr_sub_idx(None, i1)
-                    self.__debug_print_oper(c, i1)
+                    await self.__debug_print_oper(c, i1)
                     self.oper_queue.append(c)
             elif tag == "insert":
                 for j in range(j1, j2):
                     c = self.crdt.new_chr_at_idx(s1[j], j)
-                    self.__debug_print_oper(c, j)
+                    await self.__debug_print_oper(c, j)
                     self.oper_queue.append(c)
 
-        self.__debug_text_matches(current_text)
+        await self.__debug_text_matches(current_text)
 
-    def __debug_text_matches(self, current_text: str):
+    async def __debug_text_matches(self, current_text: str):
         if str(self.crdt) != current_text:
             print()
             print("-----")
@@ -71,19 +69,17 @@ class EditorBackend:
             print("-----")
             print()
 
-    def __debug_print_oper(self, char: Char, index: int):
+    async def __debug_print_oper(self, char: Char, index: int):
         if char.value is None:
             print("delete", end=" ")
         else:
             print("insert", end=" ")
         print(char.value, index, char.pos_id)
 
-    def apply_queue(self, oper_queue: deque):
+    async def apply_queue(self, oper_queue: deque):
         if oper_queue:
             self.has_changes = True
 
         while oper_queue:
             c = oper_queue.pop()
             self.crdt.set_char(c)
-
-

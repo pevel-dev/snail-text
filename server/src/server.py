@@ -25,6 +25,7 @@ class Server:
     def disconnect_client(self, client_id: int, file_id: int) -> None:
         self.count_clients -= 1
         del self.clients[client_id]
+        self.files[file_id].remove(client_id)
         logger.info(f"Отключён клиент: {client_id}. Работал с файлом: {file_id}")
 
 

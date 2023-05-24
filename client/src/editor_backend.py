@@ -66,7 +66,7 @@ class EditorBackend(QtCore.QObject):
             except:
                 print(f"Ты идиот чё прислал {message}")
                 continue
-            self.crdt.set_char(message)
+            # self.crdt.set_char(message)
             if self.changes is None:
                 self.changes = list()
 

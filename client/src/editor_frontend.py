@@ -1,5 +1,6 @@
 import asyncio
 
+from PyQt6.QtGui import QTextCursor
 from PyQt6.QtWidgets import QMainWindow, QTextEdit, QMenuBar, QFileDialog, \
     QMessageBox
 
@@ -76,12 +77,17 @@ class Frontend(QMainWindow):
             self.backend.changes = None
 
     def apply_changes(self, changes: list[Char]):
+        cursor = self.text_widget.textCursor().position()
         for c in changes:
+            self.backend.crdt.set_char(c)
             insert_index = self.backend.crdt.get_idx_from_pos_id(c.pos_id)
-            cursor = self.text_widget.textCursor().position()
-            if insert_index <= cursor:
-                cursor += 1
 
-            self.text_widget.textCursor().setPosition(insert_index)
-            self.text_widget.insertPlainText(c.value)
-            self.text_widget.setTextCursor(cursor)
+            if insert_index <= cursor:
+                cursor += 1 if c.value is not None else -1
+
+        self.text_widget.setPlainText(str(self.backend.crdt))
+
+        c = self.text_widget.textCursor()
+        c.setPosition(cursor)
+        self.text_widget.setTextCursor(c)
+

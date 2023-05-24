@@ -2,11 +2,11 @@ import json
 from collections import defaultdict
 
 from fastapi import WebSocket
+from loguru import logger
 from server.src.file import File
 
 from crdt.heap import Char
 
-from loguru import logger
 
 class Server:
     def __init__(self):
@@ -15,22 +15,21 @@ class Server:
         self.files = defaultdict(list)
 
     def connect_client(
-            self, client_id: int, file_id: int, websocket: WebSocket
+            self, client_id: int, file_id: str, websocket: WebSocket
     ) -> None:
         self.count_clients += 1
         self.clients[client_id] = {"file": File(file_id), "socket": websocket}
         self.files[file_id].append(client_id)
         logger.info(f"Подключён клиент: {client_id}. Работает с файлом: {file_id}")
 
-    def disconnect_client(self, client_id: int, file_id: int) -> None:
+    def disconnect_client(self, client_id: int, file_id: str) -> None:
         self.count_clients -= 1
         del self.clients[client_id]
         self.files[file_id].remove(client_id)
         logger.info(f"Отключён клиент: {client_id}. Работал с файлом: {file_id}")
 
-
     async def handle_update(self, update: dict, client_id: int,
-                      file_id: int) -> None:
+                            file_id: str) -> None:
         logger.info(f"Обрабатываем update от {client_id}")
 
         self.clients[client_id]["file"].crdt.set_char(Char.from_dict(update))

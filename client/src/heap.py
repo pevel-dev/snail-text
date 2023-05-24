@@ -150,3 +150,6 @@ class HeapCRDT:
     def get_idx_from_pos_id(self, pos_id: Decimal):
         return bisect_left(self.present_positions, pos_id)
 
+    def __iter__(self):
+        return self.heap.__iter__()
+

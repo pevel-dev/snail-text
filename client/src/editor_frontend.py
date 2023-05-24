@@ -3,7 +3,7 @@ import asyncio
 from PyQt6.QtWidgets import QMainWindow, QTextEdit, QMenuBar, QFileDialog, \
     QMessageBox
 
-from client.src.editor_backend import EditorBackend
+from editor_backend import EditorBackend
 
 
 class Frontend(QMainWindow):

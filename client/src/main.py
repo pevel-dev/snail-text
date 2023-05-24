@@ -3,7 +3,7 @@ import sys
 from PyQt6 import QtWidgets
 from qasync import QEventLoop
 
-from client.src.editor_frontend import Frontend
+from editor_frontend import Frontend
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)

@@ -8,7 +8,7 @@ import websockets
 from PyQt6 import QtCore
 from qasync import asyncSlot
 
-from client.src.heap import HeapCRDT, Char
+from heap import HeapCRDT, Char
 
 
 class EditorBackend(QtCore.QObject):

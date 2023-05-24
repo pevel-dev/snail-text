@@ -3,8 +3,8 @@ import asyncio
 from PyQt6.QtWidgets import QMainWindow, QTextEdit, QMenuBar, QFileDialog, \
     QMessageBox
 
-from client.src.editor_backend import EditorBackend
-from crdt.heap import Char
+from editor_backend import EditorBackend
+from heap import Char
 
 
 class Frontend(QMainWindow):
@@ -15,7 +15,7 @@ class Frontend(QMainWindow):
 
         self.setWindowTitle("snail-text")
         self.text_widget = QTextEdit()
-        self.text_widget.setPlainText(self.text)
+        self.text_widget.setPlainText(str(self.backend.crdt))
 
         self.text_widget.textChanged.connect(self.text_change)
         self.setCentralWidget(self.text_widget)
@@ -79,8 +79,11 @@ class Frontend(QMainWindow):
         for c in changes:
             insert_index = self.backend.crdt.get_idx_from_pos_id(c.pos_id)
             cursor = self.text_widget.textCursor()
-            cursor = cursor if insert_index > cursor else cursor + 1
+
+            if insert_index <= cursor.position():
+                cursor.movePosition(cursor.MoveOperation.NextCharacter)
+
 
             self.text_widget.setTextCursor(cursor)
-            self.text_widget.insertPlainText(c.pos_id)
+            self.text_widget.insertPlainText(c.value)
             self.text_widget.setTextCursor(cursor)

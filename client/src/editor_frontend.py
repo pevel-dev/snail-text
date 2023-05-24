@@ -78,12 +78,10 @@ class Frontend(QMainWindow):
     def apply_changes(self, changes: list[Char]):
         for c in changes:
             insert_index = self.backend.crdt.get_idx_from_pos_id(c.pos_id)
-            cursor = self.text_widget.textCursor()
+            cursor = self.text_widget.textCursor().position()
+            if insert_index <= cursor:
+                cursor += 1
 
-            if insert_index <= cursor.position():
-                cursor.movePosition(cursor.MoveOperation.NextCharacter)
-
-
-            self.text_widget.setTextCursor(cursor)
+            self.text_widget.textCursor().setPosition(insert_index)
             self.text_widget.insertPlainText(c.value)
             self.text_widget.setTextCursor(cursor)

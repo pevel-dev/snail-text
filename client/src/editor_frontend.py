@@ -4,6 +4,7 @@ from PyQt6.QtWidgets import QMainWindow, QTextEdit, QMenuBar, QFileDialog, \
     QMessageBox
 
 from client.src.editor_backend import EditorBackend
+from crdt.heap import Char
 
 
 class Frontend(QMainWindow):
@@ -11,7 +12,6 @@ class Frontend(QMainWindow):
         super().__init__()
 
         self.backend = EditorBackend(file_path, debug_mode)
-        self.text = str(self.backend.crdt)
 
         self.setWindowTitle("snail-text")
         self.text_widget = QTextEdit()
@@ -26,8 +26,8 @@ class Frontend(QMainWindow):
 
     def text_change(self):
         current_text = self.text_widget.toPlainText()
-        self.backend.handle_change_text(current_text, self.text)
-        self.text = current_text
+        self.backend.handle_change_text\
+            (current_text, str(self.backend.crdt))
 
     def setup_menus(self):
         menu_bar = QMenuBar(parent=self)
@@ -71,5 +71,16 @@ class Frontend(QMainWindow):
                 continue
 
             changes = self.backend.changes
-            self.text_widget.insertPlainText(str(changes))
+            self.apply_changes(changes)
+
             self.backend.changes = None
+
+    def apply_changes(self, changes: list[Char]):
+        for c in changes:
+            insert_index = self.backend.crdt.get_idx_from_pos_id(c.pos_id)
+            cursor = self.text_widget.textCursor()
+            cursor = cursor if insert_index > cursor else cursor + 1
+
+            self.text_widget.setTextCursor(cursor)
+            self.text_widget.insertPlainText(c.pos_id)
+            self.text_widget.setTextCursor(cursor)

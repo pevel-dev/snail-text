@@ -41,7 +41,7 @@ class EditorBackend(QtCore.QObject):
         else:
             self.handle_change_text = self.__handle_change_text
 
-        self.changes = HeapCRDT(self.client_id)
+        self.changes = None
 
     @property
     def websocket(self):
@@ -68,9 +68,9 @@ class EditorBackend(QtCore.QObject):
                 continue
             self.crdt.set_char(message)
             if self.changes is None:
-                self.changes = HeapCRDT(self.client_id)
+                self.changes = list()
 
-            self.changes.set_char(message)
+            self.changes.append(message)
 
 
     @asyncSlot(dict)

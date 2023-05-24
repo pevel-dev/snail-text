@@ -1,3 +1,4 @@
+import decimal
 from random import shuffle
 
 import pytest
@@ -130,3 +131,11 @@ def test_character_before_last():
     crdt.new_chr_sub_idx(None, len(str(crdt)) - 2)
     crdt.new_chr_at_idx('1', len(str(crdt)) - 1)
     assert str(crdt) == "time.sleep(101)"
+
+
+def test_idx_from_pos_id():
+    init = "abcd"
+    crdt = HeapCRDT(0, init)
+    assert crdt.get_idx_from_pos_id(decimal.Decimal(-1)) == 0
+    assert crdt.get_idx_from_pos_id(decimal.Decimal(10000)) == 4
+    assert crdt.get_idx_from_pos_id(decimal.Decimal(2)) == 1

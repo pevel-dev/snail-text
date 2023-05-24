@@ -50,7 +50,7 @@ class HeapCRDT:
         """
 
         self.__handle_insert(chr)
-        print(str(self), chr)
+        # print(str(self), chr)
 
     def __get_next_id_from_spread(self, id):
         id = math.ceil(id)
@@ -146,3 +146,7 @@ class HeapCRDT:
         c = Char(value, self.find_pos_id_from_idx(index), self.author_id)
         self.set_char(c)
         return c
+
+    def get_idx_from_pos_id(self, pos_id: Decimal):
+        return bisect_left(self.present_positions, pos_id)
+

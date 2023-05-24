@@ -41,8 +41,7 @@ class EditorBackend(QtCore.QObject):
         else:
             self.handle_change_text = self.__handle_change_text
 
-        self.oper_queue = deque()
-        self.has_changes = False
+        self.changes = HeapCRDT(self.client_id)
 
     @property
     def websocket(self):
@@ -68,7 +67,11 @@ class EditorBackend(QtCore.QObject):
                 print(f"Ты идиот чё прислал {message}")
                 continue
             self.crdt.set_char(message)
-            self.has_changes = True
+            if self.changes is None:
+                self.changes = HeapCRDT(self.client_id)
+
+            self.changes.set_char(message)
+
 
     @asyncSlot(dict)
     async def send_update(self, char: Char):

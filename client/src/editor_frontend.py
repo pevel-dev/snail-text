@@ -66,9 +66,10 @@ class Frontend(QMainWindow):
 
     async def update_text(self):
         while True:
-            if not self.backend.has_changes:
+            if self.backend.changes is None:
                 await asyncio.sleep(0.01)
                 continue
-            self.text = str(self.backend.crdt)
-            self.text_widget.setPlainText(self.text)
-            self.backend.has_changes = False
+
+            changes = self.backend.changes
+            self.text_widget.insertPlainText(str(changes))
+            self.backend.changes = None

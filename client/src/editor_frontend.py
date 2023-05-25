@@ -9,10 +9,10 @@ from heap import Char
 
 
 class Frontend(QMainWindow):
-    def __init__(self, file_path=None, debug_mode=False):
+    def __init__(self, server_address, file_path=None, debug_mode=False):
         super().__init__()
 
-        self.backend = EditorBackend(file_path, debug_mode)
+        self.backend = EditorBackend(server_address, file_path, debug_mode)
 
         self.setWindowTitle("snail-text")
         self.text_widget = QTextEdit()

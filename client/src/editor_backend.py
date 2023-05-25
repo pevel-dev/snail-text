@@ -14,9 +14,10 @@ from heap import HeapCRDT, Char
 class EditorBackend(QtCore.QObject):
     dataChanged = QtCore.pyqtSignal(dict)
 
-    def __init__(self, file_path=None, debug_mode=False):
+    def __init__(self, server_address, file_path=None, debug_mode=False):
         super().__init__()
         self._websocket = None
+        self.server_address = server_address
 
         self.differ = difflib.SequenceMatcher()
         init_str = ""
@@ -80,7 +81,7 @@ class EditorBackend(QtCore.QObject):
 
     def run(self):
         loop = asyncio.get_event_loop()
-        loop.create_task(self.connect(server="ws://localhost:8000/ws"))
+        loop.create_task(self.connect(server=f"ws://{self.server_address}/ws"))
         loop.run_forever()
 
     def __handle_change_text(self, current_text, last_text):

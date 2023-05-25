@@ -13,7 +13,7 @@ async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     data = await websocket.receive_text()
     data = dict(json.loads(data))
-    server.connect_client(data["client_id"], data["file_id"], websocket)
+    await server.connect_client(data["client_id"], data["file_id"], websocket)
     try:
         while True:
             data = await websocket.receive_text()
